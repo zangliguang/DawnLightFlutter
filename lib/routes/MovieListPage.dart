@@ -7,12 +7,12 @@ import 'package:liguang_flutter/http/HttpUtil.dart';
 import 'package:liguang_flutter/routes/MovieInfoPage.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-class MovielistPage extends StatefulWidget {
+class MovieListPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _MovieListState();
 }
 
-class _MovieListState extends State<MovielistPage> {
+class _MovieListState extends State<MovieListPage> {
   List listData;
   final flutterWebViewPlugin = FlutterWebviewPlugin();
   ScrollController _scrollController = new ScrollController();
@@ -41,7 +41,7 @@ class _MovieListState extends State<MovielistPage> {
             "${Constants.BaseUrl}movie/?start=${isRefresh ? 0 : curPage}&pageSize=${Constants.DefaultPageSize}&mosaic=1")
         .then((result) {
       setState(() {
-        print(result);
+//        print(result);
         if (isRefresh) {
           listData = result["data"];
         } else {
@@ -63,7 +63,7 @@ class _MovieListState extends State<MovielistPage> {
     } else {
       Widget listView = new ListView.builder(
         itemCount: listData.length,
-        itemBuilder: (context, i) => renderRow(i),
+        itemBuilder: (context, i) => _renderRow(i),
         controller: _scrollController,
       );
       return new RefreshIndicator(child: listView, onRefresh: _pullToRefresh);
@@ -76,7 +76,7 @@ class _MovieListState extends State<MovielistPage> {
     return null;
   }
 
-  Widget renderRow(int index) {
+  Widget _renderRow(int index) {
     var movie = listData[index];
     return Card(
         child: Container(
@@ -117,11 +117,6 @@ class _MovieListState extends State<MovielistPage> {
           ],
         ),
         onTap: () {
-//          Navigator.of(context).push(new MaterialPageRoute(
-//              builder: (ctx) => new MovieDetailPage(
-//                  movieVid: movie["Vid"],
-//                  headImgUri: movie["Cover"],
-//                  movieTitle: movie["MovieTitle"])));
 
           if (index % 2 == 0) {
             flutterWebViewPlugin.launch(ToolUtils.getPalyerUrl(movie["Vid"]));

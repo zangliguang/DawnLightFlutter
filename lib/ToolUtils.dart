@@ -16,5 +16,7 @@ class ToolUtils {
 
     return url;
   }
-  
+  static Future<String> getMovieVid(String licences) async{
+
+  }
 }

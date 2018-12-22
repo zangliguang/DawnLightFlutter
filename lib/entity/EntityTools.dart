@@ -1,6 +1,7 @@
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
+import 'package:liguang_flutter/entity/MovieItemEntity.dart';
 import 'package:liguang_flutter/entity/MoviePageInfo.dart';
 
 class EntityTools {
@@ -57,7 +58,10 @@ class EntityTools {
     if (null != imgBox) {
       var imageElements = imgBox.querySelectorAll("a.sample-box");
       for (Element element in imageElements) {
-        sampleImages.add(new SearchFactor(element.querySelector("img").attributes['src'], element.attributes['title'], element.attributes['href']));
+        sampleImages.add(new SearchFactor(
+            element.querySelector("img").attributes['src'],
+            element.attributes['title'],
+            element.attributes['href']));
       }
     }
 //    print(headers);
@@ -67,5 +71,40 @@ class EntityTools {
 //    print("actress：$actresses");
 //    print("sampleImages：$sampleImages");
     return new MovieInfo(cover, headers, genre, actresses, sampleImages);
+  }
+
+  static Future<List<MovieItemEntity>> getMovieItemsFromWeb(String uri) async {
+    var movies = new List<MovieItemEntity>();
+    try {
+      var htmlForParse;
+
+      htmlForParse = await http.read(uri);
+//  print(htmlForParse);
+      var document = parse(htmlForParse);
+      Element body = document.body;
+
+      var querySelectorAll = body.querySelectorAll('div.item');
+
+      for (Element element in querySelectorAll) {
+        if (element.querySelectorAll("date").length == 0) {
+          continue;
+        }
+        String title = element.querySelector('span').text;
+        String detailUrl = element.querySelector('a').attributes['href'];
+        String coverUrl = element.querySelector('img').attributes['src'];
+        String licences = element.querySelectorAll("date")[0].text;
+
+        String publicDate = element.querySelectorAll('date')[1].text;
+        bool hot =
+            element.getElementsByClassName('glyphicon glyphicon-fire').length >
+                0;
+        movies.add(new MovieItemEntity(
+            title, detailUrl, coverUrl, licences, publicDate, hot));
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+    print(movies);
+    return movies;
   }
 }

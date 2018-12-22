@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+//import 'package:fluttertoast/fluttertoast.dart';
+import 'package:liguang_flutter/Constants.dart';
 import 'package:liguang_flutter/ToolUtils.dart';
 import 'package:liguang_flutter/entity/EntityTools.dart';
 import 'package:liguang_flutter/entity/MoviePageInfo.dart';
+import 'package:liguang_flutter/http/HttpUtil.dart';
+import 'package:liguang_flutter/routes/MovieListFromWebPage.dart';
+import 'package:liguang_flutter/ui/CommonUI.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 class MovieInfoPage extends StatefulWidget {
   var pageUrl;
@@ -15,13 +20,12 @@ class MovieInfoPage extends StatefulWidget {
       : super(key: keys);
 
   @override
-  State<StatefulWidget> createState() {
-    return new MovieInfoPageState();
-  }
+  State<StatefulWidget> createState() => _MovieInfoPageState();
 }
 
-class MovieInfoPageState extends State<MovieInfoPage> {
+class _MovieInfoPageState extends State<MovieInfoPage> {
   MovieInfo movieInfo;
+  bool showLoading = false;
 
   @override
   void initState() {
@@ -30,17 +34,8 @@ class MovieInfoPageState extends State<MovieInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (movieInfo == null) {
-      return new Container(
-          decoration: new BoxDecoration(
-              color: Colors.white,
-              image: new DecorationImage(
-                  image: new NetworkImage(
-                      'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1545498091239&di=d2c93953fa17c8beb1890c9918f407e2&imgtype=0&src=http%3A%2F%2Fa.vpimg2.com%2Fupload%2Fmerchandise%2F104040%2FINSTY-Y9000-2.jpg'))),
-          child: new Center(
-            // CircularProgressIndicator是一个圆形的Loading进度条
-            child: new CircularProgressIndicator(),
-          ));
+    if (movieInfo == null || showLoading) {
+      return UITools.getDefaultLoading();
     }
     return Scaffold(
       body: CustomScrollView(slivers: <Widget>[
@@ -63,8 +58,30 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                   fit: BoxFit.cover,
                   placeholder: kTransparentImage,
                 ),
-                onTap: (){
-                  FlutterWebviewPlugin().launch(ToolUtils.getPalyerUrl(widget.movieVid));
+                onTap: () {
+                  setState(() {
+                    showLoading = true;
+                  });
+                  HttpUtil.getInstance()
+                      .get(
+                          "${Constants.SearchMovie}${movieInfo.header[1].factorName}")
+                      .then((result) {
+                    setState(() {
+                      showLoading = false;
+                    });
+                    if (result['response']['videos'].length == 0) {
+//                      Fluttertoast.showToast(
+//                          msg: "别费劲了，找不到资源!",
+//                          toastLength: Toast.LENGTH_SHORT,
+//                          gravity: ToastGravity.CENTER,
+//                          timeInSecForIos: 1,
+//                          backgroundColor: Colors.red,
+//                          textColor: Colors.white);
+                    } else {
+                      FlutterWebviewPlugin().launch(ToolUtils.getPalyerUrl(
+                          result['response']['videos'][0]['vid']));
+                    }
+                  });
                 },
               ),
             ),
@@ -106,7 +123,12 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                                     ),
                                   ),
                                   onTap: () {
-                                    print("跳转到：" + searchFactor.factorUrl);
+                                    Navigator.of(context).push(
+                                        new MaterialPageRoute(
+                                            builder: (ctx) =>
+                                                new MovieListFromWebPage(
+                                                    searchFactor.factorUrl,
+                                                    searchFactor.factorName)));
                                   },
                                 ),
                         )
@@ -133,7 +155,12 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                           .map<Widget>((searchFactor) => ActionChip(
                                 label: new Text(searchFactor.factorName),
                                 onPressed: () {
-                                  print("应该跳转到：${searchFactor.factorUrl}");
+                                  Navigator.of(context).push(
+                                      new MaterialPageRoute(
+                                          builder: (ctx) =>
+                                              new MovieListFromWebPage(
+                                                  searchFactor.factorUrl,
+                                                  searchFactor.factorName)));
                                 },
                               ))
                           .toList(),
@@ -169,7 +196,12 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                                 ],
                               ),
                               onTap: () {
-                                print("跳转到：" + searchFactor.factorUrl);
+                                Navigator.of(context).push(
+                                    new MaterialPageRoute(
+                                        builder: (ctx) =>
+                                            new MovieListFromWebPage(
+                                                searchFactor.factorUrl,
+                                                searchFactor.factorName)));
                               }))
                           .toList(),
                     ),
@@ -212,9 +244,6 @@ class MovieInfoPageState extends State<MovieInfoPage> {
     EntityTools.getContentFrom(url).then((movies) {
       setState(() {
         movieInfo = movies;
-        print("======================");
-        print(movieInfo);
-        print("======================");
       });
     });
   }
