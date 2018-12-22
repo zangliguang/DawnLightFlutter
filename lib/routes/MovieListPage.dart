@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:liguang_flutter/ToolUtils.dart';
 import 'package:liguang_flutter/constants.dart';
 import 'package:liguang_flutter/http/HttpUtil.dart';
-import 'package:liguang_flutter/routes/MovieDetailPage.dart';
+import 'package:liguang_flutter/routes/MovieInfoPage.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class MovielistPage extends StatefulWidget {
@@ -12,7 +14,7 @@ class MovielistPage extends StatefulWidget {
 
 class _MovieListState extends State<MovielistPage> {
   List listData;
-
+  final flutterWebViewPlugin = FlutterWebviewPlugin();
   ScrollController _scrollController = new ScrollController();
   var curPage = 0;
 
@@ -115,11 +117,22 @@ class _MovieListState extends State<MovielistPage> {
           ],
         ),
         onTap: () {
-          Navigator.of(context).push(new MaterialPageRoute(
-              builder: (ctx) => new MovieDetailPage(
-                  movieVid: movie["Vid"],
-                  headImgUri: movie["Cover"],
-                  movieTitle: movie["MovieTitle"])));
+//          Navigator.of(context).push(new MaterialPageRoute(
+//              builder: (ctx) => new MovieDetailPage(
+//                  movieVid: movie["Vid"],
+//                  headImgUri: movie["Cover"],
+//                  movieTitle: movie["MovieTitle"])));
+
+          if (index % 2 == 0) {
+            flutterWebViewPlugin.launch(ToolUtils.getPalyerUrl(movie["Vid"]));
+          }else{
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (ctx) => new MovieInfoPage(
+                    movieVid: movie["Vid"],
+                    pageUrl: "https://avmoo.xyz/cn/movie/6x4w",
+                    movieTitle: movie["MovieTitle"])));
+          }
+
         },
       ),
     ));
