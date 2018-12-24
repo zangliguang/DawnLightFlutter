@@ -1,9 +1,6 @@
-# liguang_flutter
+# 使用flutter 开车
 
-A new Flutter application.
+没有播放按钮的不能播放。
 
-## Getting Started
+[apk文件](https://github.com/zangliguang/DawnLightFlutter/asset/app.apk).
 
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
-# DawnLightFlutter
