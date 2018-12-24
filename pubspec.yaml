@@ -32,6 +32,12 @@ dev_dependencies:
     sdk: flutter
 
 
+
+
+
+
+
+
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
@@ -73,3 +79,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.io/custom-fonts/#from-packages
+  assets:
+    - images/launcher.jpg
