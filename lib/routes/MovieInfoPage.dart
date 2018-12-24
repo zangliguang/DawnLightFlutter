@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-//import 'package:fluttertoast/fluttertoast.dart';
 import 'package:liguang_flutter/Constants.dart';
 import 'package:liguang_flutter/ToolUtils.dart';
 import 'package:liguang_flutter/entity/EntityTools.dart';
 import 'package:liguang_flutter/entity/MoviePageInfo.dart';
 import 'package:liguang_flutter/http/HttpUtil.dart';
+import 'package:liguang_flutter/routes/ImageBrowserPage.dart';
 import 'package:liguang_flutter/routes/MovieListFromWebPage.dart';
 import 'package:liguang_flutter/ui/CommonUI.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -25,7 +25,7 @@ class MovieInfoPage extends StatefulWidget {
 
 class _MovieInfoPageState extends State<MovieInfoPage> {
   MovieInfo movieInfo;
-  bool showLoading = false;
+  String movieVid;
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _MovieInfoPageState extends State<MovieInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (movieInfo == null || showLoading) {
+    if (movieInfo == null) {
       return UITools.getDefaultLoading();
     }
     return Scaffold(
@@ -50,41 +50,26 @@ class _MovieInfoPageState extends State<MovieInfoPage> {
               overflow: TextOverflow.ellipsis,
             ),
             background: Hero(
-              tag: widget.movieVid,
-              child: new InkWell(
-                child: FadeInImage.memoryNetwork(
-//                image: movieInfo.coverUrl,
-                  image: movieInfo.coverUrl,
-                  fit: BoxFit.cover,
-                  placeholder: kTransparentImage,
-                ),
-                onTap: () {
-                  setState(() {
-                    showLoading = true;
-                  });
-                  HttpUtil.getInstance()
-                      .get(
-                          "${Constants.SearchMovie}${movieInfo.header[1].factorName}")
-                      .then((result) {
-                    setState(() {
-                      showLoading = false;
-                    });
-                    if (result['response']['videos'].length == 0) {
-//                      Fluttertoast.showToast(
-//                          msg: "别费劲了，找不到资源!",
-//                          toastLength: Toast.LENGTH_SHORT,
-//                          gravity: ToastGravity.CENTER,
-//                          timeInSecForIos: 1,
-//                          backgroundColor: Colors.red,
-//                          textColor: Colors.white);
-                    } else {
-                      FlutterWebviewPlugin().launch(ToolUtils.getPalyerUrl(
-                          result['response']['videos'][0]['vid']));
-                    }
-                  });
-                },
-              ),
-            ),
+                tag: widget.movieVid,
+                child: new Container(
+                    decoration: new BoxDecoration(
+                        color: Colors.white,
+                        image: new DecorationImage(
+                            image: new NetworkImage(movieInfo.coverUrl))),
+                    child: movieVid == null
+                        ? null
+                        : new Center(
+                            child: new InkWell(
+                            child: new Icon(
+                              Icons.play_circle_outline,
+                              size: 100.0,
+                              color: Colors.green,
+                            ),
+                            onTap: () {
+                              FlutterWebviewPlugin()
+                                  .launch(ToolUtils.getPalyerUrl(movieVid));
+                            },
+                          )))),
           ),
         ),
         SliverList(
@@ -226,11 +211,34 @@ class _MovieInfoPageState extends State<MovieInfoPage> {
                       spacing: 8.0, // gap between adjacent chips
                       runSpacing: 4.0, // gapr between lines
                       children: movieInfo.sampleImages
-                          .map<Widget>((searchFactor) =>
-                              FadeInImage.memoryNetwork(
-                                  fit: BoxFit.fill,
-                                  placeholder: kTransparentImage,
-                                  image: searchFactor.factorLabel))
+                          .map<Widget>((searchFactor) => InkWell(
+                                child: FadeInImage.memoryNetwork(
+                                    fit: BoxFit.fill,
+                                    placeholder: kTransparentImage,
+                                    image: searchFactor.factorLabel),
+                                onTap: () {
+                                  List<String> urls = new List();
+                                  int initialIndex;
+                                  for (var i = 0;
+                                      i < movieInfo.sampleImages.length;
+                                      i++) {
+                                    var url =
+                                        movieInfo.sampleImages[i].factorUrl;
+                                    if (url == searchFactor.factorUrl) {
+                                      initialIndex = i;
+                                    }
+                                    urls.add(url);
+                                  }
+
+                                  Navigator.of(context).push(
+                                      new MaterialPageRoute(
+                                          builder: (ctx) =>
+                                              new ImageBrowserPage(
+                                                urls,
+                                                initialIndex,
+                                              )));
+                                },
+                              ))
                           .toList(),
                     ),
                   ),
@@ -242,8 +250,23 @@ class _MovieInfoPageState extends State<MovieInfoPage> {
 
   void _loadMovieInfo(url) {
     EntityTools.getContentFrom(url).then((movies) {
-      setState(() {
-        movieInfo = movies;
+      if (mounted) {
+        setState(() {
+          movieInfo = movies;
+        });
+      }
+
+      HttpUtil.getInstance()
+          .get("${Constants.SearchMovie}${movieInfo.header[1].factorName}")
+          .then((result) {
+        print("请求vid：" + result.toString());
+        if (mounted) {
+          setState(() {
+            movieVid = result['response']['videos'].length == 0
+                ? null
+                : result['response']['videos'][0]['vid'];
+          });
+        }
       });
     });
   }

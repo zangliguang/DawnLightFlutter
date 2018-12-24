@@ -1,6 +1,7 @@
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
+import 'package:liguang_flutter/Constants.dart';
 import 'package:liguang_flutter/entity/MovieItemEntity.dart';
 import 'package:liguang_flutter/entity/MoviePageInfo.dart';
 
@@ -104,7 +105,60 @@ class EntityTools {
     } catch (e) {
       print(e.toString());
     }
-    print(movies);
     return movies;
+  }
+
+  static Future<List<List<SearchFactor>>> getGenreFrom() async {
+    List<List<SearchFactor>> categories = new List();
+    try {
+      var htmlForParse;
+
+      htmlForParse = await http.read(Constants.Genre);
+//  print(htmlForParse);
+      var document = parse(htmlForParse);
+      Element body = document.body;
+
+      List<String> mainCategory = body
+          .getElementsByClassName("container-fluid pt-10")[0]
+          .querySelectorAll('h4')
+          .map<String>((element) => element.text)
+          .toList();
+      categories = body
+          .getElementsByClassName("row genre-box")
+          .map<List<SearchFactor>>((element) => element
+              .querySelectorAll('a')
+              .map<SearchFactor>((labels) => new SearchFactor(
+                  "label", labels.text, labels.attributes['href']))
+              .toList())
+          .toList();
+//      print(mainCategory);
+//      print(categories[0]);
+      for (var i = 0; i < categories.length; i++) {
+        categories[i][0].factorLabel = mainCategory[i];
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+    return categories;
+  }
+
+  static Future<List<SearchFactor>> getActressFromWeb(String uri) async {
+    List<SearchFactor> results = new List();
+    try {
+      var htmlForParse;
+
+      htmlForParse = await http.read(uri);
+      var document = parse(htmlForParse);
+      print(document.body.getElementsByClassName("avatar-box text-center"));
+      results = document.body
+          .getElementsByClassName("avatar-box text-center")
+          .map<SearchFactor>((element) {
+        return new SearchFactor(element.querySelector('img').attributes['src'],
+            element.querySelector('span').text, element.attributes['href']);
+      }).toList();
+    } catch (e) {
+      print(e.toString());
+    }
+    return results;
   }
 }

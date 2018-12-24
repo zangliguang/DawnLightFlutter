@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:liguang_flutter/Constants.dart';
+import 'package:liguang_flutter/routes/ActressPage.dart';
+import 'package:liguang_flutter/routes/MovieCategoryPage.dart';
 import 'package:liguang_flutter/routes/MovieListFromWebPage.dart';
 
 class MovieHomePage extends StatefulWidget {
@@ -19,11 +21,11 @@ class _MovieHomeState extends State<MovieHomePage> {
     ];
     var children = <Widget>[
 //              new MovieListPage(),
-      new MovieListFromWebPage(Constants.AllPage, null),
-      new MovieListFromWebPage(Constants.ReleasedPage, null),
-      new MovieListFromWebPage(Constants.HotPage, null),
-      Center(child: Icon(Icons.cloud, size: 64.0, color: Colors.green)),
-      Center(child: Icon(Icons.cloud, size: 64.0, color: Colors.blue)),
+      MovieListFromWebPage(Constants.BaseUrl, null),
+      MovieListFromWebPage(Constants.ReleasedPage, null),
+      MovieListFromWebPage(Constants.HotPage, null),
+      MovieCategoryPage(),
+      ActressPage(),
     ];
     return DefaultTabController(
         length: tabs.length,
@@ -31,7 +33,7 @@ class _MovieHomeState extends State<MovieHomePage> {
             appBar: AppBar(
               flexibleSpace: SafeArea(
                 child: TabBar(
-                  isScrollable:true,
+                  isScrollable: true,
                   tabs: tabs,
                   indicatorSize: TabBarIndicatorSize.label,
                 ),

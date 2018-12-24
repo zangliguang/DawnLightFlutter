@@ -16,7 +16,8 @@ class MovieListFromWebPage extends StatefulWidget {
   State<StatefulWidget> createState() => _MovieListFromWebState();
 }
 
-class _MovieListFromWebState extends State<MovieListFromWebPage> {
+class _MovieListFromWebState extends State<MovieListFromWebPage>
+    with AutomaticKeepAliveClientMixin {
   List<MovieItemEntity> movieItems = new List();
   int page = 1;
   bool loadMore = true;
@@ -30,7 +31,11 @@ class _MovieListFromWebState extends State<MovieListFromWebPage> {
 
   @override
   void initState() {
-    _loadMovieList();
+    print("init");
+    if (movieItems.length == 0) {
+      _loadMovieList();
+    }
+
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -75,7 +80,7 @@ class _MovieListFromWebState extends State<MovieListFromWebPage> {
   }
 
   void _loadMovieList() {
-    print(widget.pageUrl + "/page/" + page.toString());
+//    print(widget.pageUrl + "/page/" + page.toString());
     if (!loadMore) {
       return;
     }
@@ -83,10 +88,12 @@ class _MovieListFromWebState extends State<MovieListFromWebPage> {
             widget.pageUrl + "/page/" + page.toString())
         .then((moviesResult) {
       loadMore = moviesResult.length > 0;
-      setState(() {
-        this.movieItems.addAll(moviesResult);
-        this.page = page + 1;
-      });
+      if (mounted) {
+        setState(() {
+          this.movieItems.addAll(moviesResult);
+          this.page = page + 1;
+        });
+      }
     });
   }
 
@@ -152,4 +159,8 @@ class _MovieListFromWebState extends State<MovieListFromWebPage> {
       ),
     ));
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
