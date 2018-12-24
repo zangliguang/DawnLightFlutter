@@ -1,6 +1,7 @@
-# 使用flutter 开车
+## 使用flutter 开车
 
 没有播放按钮的不能播放。
 
-[apk文件](https://github.com/zangliguang/DawnLightFlutter/asset/app.apk).
+下载[apk文件](https://raw.githubusercontent.com/zangliguang/DawnLightFlutter/master/asset/app.apk)
 
+#点个星再走，谢谢！！！。
