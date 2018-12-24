@@ -31,7 +31,6 @@ class _MovieListFromWebState extends State<MovieListFromWebPage>
 
   @override
   void initState() {
-    print("init");
     if (movieItems.length == 0) {
       _loadMovieList();
     }

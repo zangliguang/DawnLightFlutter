@@ -149,7 +149,6 @@ class EntityTools {
 
       htmlForParse = await http.read(uri);
       var document = parse(htmlForParse);
-      print(document.body.getElementsByClassName("avatar-box text-center"));
       results = document.body
           .getElementsByClassName("avatar-box text-center")
           .map<SearchFactor>((element) {

@@ -27,12 +27,14 @@ class _HomePageState extends State<MyHomeRoute>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+      child: Scaffold(
 //      appBar: AppBar(
 //        title: Text("DawnLight"),
 //      ),
-      body: _pages[this.index],
-      bottomNavigationBar: _getBottomNavigationBar(),
+        body: _pages[this.index],
+        bottomNavigationBar: _getBottomNavigationBar(),
+      ),
     );
   }
 
