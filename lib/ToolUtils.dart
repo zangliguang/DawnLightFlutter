@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 
@@ -16,7 +16,14 @@ class ToolUtils {
 
     return url;
   }
-  static Future<String> getMovieVid(String licences) async{
 
+  static Future<String> getMovieVid(String licences) async {}
+
+  static launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

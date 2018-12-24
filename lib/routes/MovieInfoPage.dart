@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
@@ -25,6 +27,8 @@ class MovieInfoPage extends StatefulWidget {
 
 class _MovieInfoPageState extends State<MovieInfoPage> {
   MovieInfo movieInfo;
+
+//  String movieVid="246958";
   String movieVid;
 
   @override
@@ -66,8 +70,13 @@ class _MovieInfoPageState extends State<MovieInfoPage> {
                               color: Colors.green,
                             ),
                             onTap: () {
-                              FlutterWebviewPlugin()
-                                  .launch(ToolUtils.getPalyerUrl(movieVid));
+                              if (Platform.isIOS) {
+                                ToolUtils.launchURL(
+                                    ToolUtils.getPalyerUrl(movieVid));
+                              } else {
+                                FlutterWebviewPlugin()
+                                    .launch(ToolUtils.getPalyerUrl(movieVid));
+                              }
                             },
                           )))),
           ),
