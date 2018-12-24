@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:liguang_flutter/Constants.dart';
+import 'package:liguang_flutter/ToolUtils.dart';
 import 'package:liguang_flutter/entity/EntityTools.dart';
 import 'package:liguang_flutter/entity/MovieItemEntity.dart';
 import 'package:liguang_flutter/routes/MovieInfoPage.dart';
@@ -18,9 +20,10 @@ class MovieListFromWebPage extends StatefulWidget {
 
 class _MovieListFromWebState extends State<MovieListFromWebPage>
     with AutomaticKeepAliveClientMixin {
-  List<MovieItemEntity> movieItems = new List();
+  List<MovieItemEntity> movieItems=new List();
   int page = 1;
   bool loadMore = true;
+  bool showSearchView = false;
   ScrollController _scrollController = new ScrollController();
 
   @override
@@ -31,10 +34,7 @@ class _MovieListFromWebState extends State<MovieListFromWebPage>
 
   @override
   void initState() {
-    if (movieItems.length == 0) {
-      _loadMovieList();
-    }
-
+    _loadMovieList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -55,8 +55,10 @@ class _MovieListFromWebState extends State<MovieListFromWebPage>
                   tooltip: "Search",
                   icon: Icon(Icons.search),
                   onPressed: () {
-                    Scaffold.of(context)
-                        .showSnackBar(SnackBar(content: Text("点击了搜索")));
+                    setState(() {
+                      showSearchView = !showSearchView;
+                    });
+                    print("点击了搜索");
                   },
                 )
               ],
@@ -66,7 +68,7 @@ class _MovieListFromWebState extends State<MovieListFromWebPage>
   }
 
   Widget _getBody() {
-    if (movieItems.isEmpty) {
+    if (movieItems.isEmpty&&loadMore) {
       return UITools.getDefaultLoading();
     } else {
       Widget listView = new ListView.builder(
@@ -74,7 +76,38 @@ class _MovieListFromWebState extends State<MovieListFromWebPage>
         itemBuilder: (context, i) => _renderRow(i),
         controller: _scrollController,
       );
-      return new RefreshIndicator(child: listView, onRefresh: _pullToRefresh);
+      var children2 = <Widget>[
+        RefreshIndicator(child: listView, onRefresh: _pullToRefresh),
+      ];
+      if (showSearchView) {
+        children2.add(Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: TextField(
+            style: Theme.of(context).textTheme.display1,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              labelText: "输入关键字",
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            ),
+            onSubmitted: (String val) {
+              ToolUtils.getSp("baseUrl", Constants.MosaicUrl).then((result) {
+                Navigator.of(context).push(new MaterialPageRoute(
+                    builder: (ctx) => new MovieListFromWebPage(
+                        result + "search/" + val, val)));
+                setState(() {
+                  showSearchView = false;
+                });
+              });
+            },
+          ),
+        ));
+      }
+      return Stack(
+          alignment: AlignmentDirectional.topCenter, children: children2);
+
+      RefreshIndicator(child: listView, onRefresh: _pullToRefresh);
     }
   }
 
@@ -114,15 +147,13 @@ class _MovieListFromWebState extends State<MovieListFromWebPage>
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Hero(
-                tag: movie.title,
-                child: FadeInImage.memoryNetwork(
-                  image: movie.coverUrl,
-                  width: 80.0,
-                  height: 100.0,
-                  fit: BoxFit.fill,
-                  placeholder: kTransparentImage,
-                )),
+            FadeInImage.memoryNetwork(
+              image: movie.coverUrl,
+              width: 80.0,
+              height: 100.0,
+              fit: BoxFit.fill,
+              placeholder: kTransparentImage,
+            ),
             Expanded(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),

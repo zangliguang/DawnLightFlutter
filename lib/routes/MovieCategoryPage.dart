@@ -5,6 +5,10 @@ import 'package:liguang_flutter/routes/MovieListFromWebPage.dart';
 import 'package:liguang_flutter/ui/CommonUI.dart';
 
 class MovieCategoryPage extends StatefulWidget {
+  var pageUrl;
+
+  MovieCategoryPage(this.pageUrl);
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -18,10 +22,12 @@ class _MovieGenreState extends State<MovieCategoryPage>
 
   @override
   void initState() {
-    EntityTools.getGenreFrom().then((result) {
-      setState(() {
-        categories = result;
-      });
+    EntityTools.getGenreFrom(widget.pageUrl).then((result) {
+      if (mounted) {
+        setState(() {
+          categories = result;
+        });
+      }
     });
   }
 

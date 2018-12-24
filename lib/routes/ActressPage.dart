@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:liguang_flutter/Constants.dart';
 import 'package:liguang_flutter/entity/EntityTools.dart';
 import 'package:liguang_flutter/entity/MoviePageInfo.dart';
 import 'package:liguang_flutter/routes/MovieListFromWebPage.dart';
@@ -8,6 +7,10 @@ import 'package:liguang_flutter/ui/CommonUI.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ActressPage extends StatefulWidget {
+  var pageUrl;
+
+  ActressPage(this.pageUrl);
+
   @override
   State<StatefulWidget> createState() => _getActressState();
 }
@@ -21,11 +24,11 @@ class _getActressState extends State<ActressPage>
 
   @override
   void initState() {
-    _loadActress();
+    _loadActress(widget.pageUrl);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        _loadActress();
+        _loadActress(widget.pageUrl);
       }
     });
   }
@@ -76,9 +79,8 @@ class _getActressState extends State<ActressPage>
     );
   }
 
-  void _loadActress() {
-    EntityTools.getActressFromWeb(
-            Constants.Actress + "/page/" + page.toString())
+  void _loadActress(String url) {
+    EntityTools.getActressFromWeb(url + "/page/" + page.toString())
         .then((result) {
       loadMore = result.length > 0;
       if (mounted) {

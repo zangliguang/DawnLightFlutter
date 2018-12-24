@@ -1,7 +1,6 @@
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
-import 'package:liguang_flutter/Constants.dart';
 import 'package:liguang_flutter/entity/MovieItemEntity.dart';
 import 'package:liguang_flutter/entity/MoviePageInfo.dart';
 
@@ -108,12 +107,12 @@ class EntityTools {
     return movies;
   }
 
-  static Future<List<List<SearchFactor>>> getGenreFrom() async {
+  static Future<List<List<SearchFactor>>> getGenreFrom(String uri) async {
     List<List<SearchFactor>> categories = new List();
     try {
       var htmlForParse;
 
-      htmlForParse = await http.read(Constants.Genre);
+      htmlForParse = await http.read(uri);
 //  print(htmlForParse);
       var document = parse(htmlForParse);
       Element body = document.body;

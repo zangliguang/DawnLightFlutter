@@ -28,19 +28,17 @@ class SliverBarPageState extends State<SliverBarPage> {
           pinned: true,
           floating: false,
           flexibleSpace: FlexibleSpaceBar(
-            title: Text(
-                widget.movieTitle == null ? "movieTitle" : widget.movieTitle),
-            background: Hero(
-              tag: widget.movieVid == null ? "movieVid" : widget.movieVid,
-              child: FadeInImage.memoryNetwork(
+              title: Text(
+                  widget.movieTitle == null ? "movieTitle" : widget.movieTitle),
+              background:
+//
+                  FadeInImage.memoryNetwork(
                 image: widget.headImgUri == null
                     ? "http://imgsrc.baidu.com/image/c0%3Dshijue1%2C0%2C0%2C294%2C40/sign=cab5935272f0f736ccf34442623cd96c/aec379310a55b3198a15275849a98226cffc172a.jpg"
                     : widget.headImgUri,
                 fit: BoxFit.fill,
                 placeholder: kTransparentImage,
-              ),
-            ),
-          ),
+              )),
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(

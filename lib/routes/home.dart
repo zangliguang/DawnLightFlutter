@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:liguang_flutter/routes/MovieHomePage.dart';
+import 'package:liguang_flutter/routes/SettingPage.dart';
 import 'package:liguang_flutter/routes/SliverBar.dart';
 
 class MyHomeRoute extends StatefulWidget {
@@ -12,9 +13,9 @@ class _HomePageState extends State<MyHomeRoute>
     with SingleTickerProviderStateMixin {
   int index = 0;
   var _pages = <Widget>[
-    new MovieHomePage(),
-    new SliverBarPage(),
-    Center(child: Icon(Icons.forum, size: 64.0, color: Colors.blue)),
+    MovieHomePage(),
+    SliverBarPage(),
+    SettingPage(),
   ];
 
   @override

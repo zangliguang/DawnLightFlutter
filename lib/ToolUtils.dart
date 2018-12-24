@@ -1,7 +1,10 @@
 import 'dart:convert';
-import 'package:url_launcher/url_launcher.dart';
+
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
+import 'package:liguang_flutter/Constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ToolUtils {
   static getPalyerUrl(String vid) {
@@ -25,5 +28,21 @@ class ToolUtils {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+
+//  static getReleasedPageUrl() {
+//    return getSp("baseUrl",Constants.MosaicUrl);
+//  }
+
+  static saveSp(String key, String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(key, value);
+  }
+
+  static Future<String> getSp(String key, String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var result = await prefs.getString(key);
+    return result == null ? value : result;
   }
 }
