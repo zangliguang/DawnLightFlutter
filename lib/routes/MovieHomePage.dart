@@ -4,6 +4,7 @@ import 'package:liguang_flutter/ToolUtils.dart';
 import 'package:liguang_flutter/routes/ActressPage.dart';
 import 'package:liguang_flutter/routes/MovieCategoryPage.dart';
 import 'package:liguang_flutter/routes/MovieListFromWebPage.dart';
+import 'package:liguang_flutter/routes/MovieListPage.dart';
 import 'package:liguang_flutter/ui/CommonUI.dart';
 
 class MovieHomePage extends StatefulWidget {
@@ -21,11 +22,12 @@ class _MovieHomeState extends State<MovieHomePage>
   TabController _movieTabController;
 
   var tabs = [
-    Tab(text: "影片"),
+    Tab(text: "全部"),
     Tab(text: "已发布"),
     Tab(text: "热门"),
     Tab(text: "类别"),
     Tab(text: "演员"),
+    Tab(text: "可播放"),
   ];
 
   @override
@@ -39,27 +41,12 @@ class _MovieHomeState extends State<MovieHomePage>
     ToolUtils.getSp("baseUrl", Constants.MosaicUrl).then((value) {
       setState(() {
         this.baseUrl = value;
-        print("修改后的URL：" + baseUrl);
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-//    return DefaultTabController(
-//        length: tabs.length,
-//        child: Scaffold(
-//            appBar: AppBar(
-//              flexibleSpace: SafeArea(
-//                child: TabBar(
-//                  isScrollable: true,
-//                  tabs: tabs,
-//                  indicatorSize: TabBarIndicatorSize.label,
-//                ),
-//              ),
-//            ),
-//            body: TabBarView(children: children)));
-
     if (baseUrl == null) {
       return UITools.getDefaultLoading();
     }
@@ -81,6 +68,7 @@ class _MovieHomeState extends State<MovieHomePage>
           MovieListFromWebPage(baseUrl + "popular", null),
           MovieCategoryPage(baseUrl + "genre"),
           ActressPage(baseUrl + 'actresses'),
+          MovieListPage(baseUrl),
         ],
         index: _contentIndex,
       ),

@@ -1,22 +1,28 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:liguang_flutter/ToolUtils.dart';
 import 'package:liguang_flutter/constants.dart';
-import 'package:liguang_flutter/http/HttpUtil.dart';
-import 'package:liguang_flutter/routes/MovieInfoPage.dart';
+import 'package:liguang_flutter/data/database_helper.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class MovieListPage extends StatefulWidget {
+  String baseUrl;
+
+  MovieListPage(this.baseUrl);
+
   @override
   State<StatefulWidget> createState() => _MovieListState();
 }
 
 class _MovieListState extends State<MovieListPage> {
-  List listData;
+  List listData = new List();
   final flutterWebViewPlugin = FlutterWebviewPlugin();
   ScrollController _scrollController = new ScrollController();
   var curPage = 0;
+  var tableName = 'mosaic_movie';
 
   @override
   void dispose() {
@@ -26,6 +32,9 @@ class _MovieListState extends State<MovieListPage> {
 
   @override
   void initState() {
+    tableName = widget.baseUrl == Constants.MosaicUrl
+        ? 'mosaic_movie'
+        : 'no_mosaic_movie';
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -35,27 +44,26 @@ class _MovieListState extends State<MovieListPage> {
     _loadMovieDate(true);
   }
 
-  void _loadMovieDate(bool isRefresh) {
-    HttpUtil.getInstance()
-        .get(
-            "${Constants.BaseUrl}movie/?start=${isRefresh ? 0 : curPage}&pageSize=${Constants.DefaultPageSize}&mosaic=1")
-        .then((result) {
-      setState(() {
-//        print(result);
-        if (isRefresh) {
-          listData = result["data"];
-        } else {
-          listData.addAll(result["data"]);
-        }
-        print("数据个数：" + listData.length.toString());
-        curPage = listData.length;
-      });
+  Future _loadMovieDate(bool isRefresh) async {
+    var db = await DatabaseHelper().db;
+    List<Map<String, dynamic>> list = await db.rawQuery(
+        "SELECT * FROM $tableName limit ${Constants.DefaultPageSize} offset ${isRefresh ? 0 : curPage}");
+    print(list.length);
+
+    setState(() {
+      if (isRefresh) {
+        listData.clear();
+      }
+      print(list);
+      print(listData);
+      listData..addAll(list);
+      curPage = listData.length;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (listData == null) {
+    if (listData.isEmpty) {
       return new Center(
         // CircularProgressIndicator是一个圆形的Loading进度条
         child: new CircularProgressIndicator(),
@@ -85,15 +93,13 @@ class _MovieListState extends State<MovieListPage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Hero(
-                tag: movie["Vid"],
-                child: FadeInImage.memoryNetwork(
-                  image: movie["Cover"],
-                  width: 80.0,
-                  height: 100.0,
-                  fit: BoxFit.fill,
-                  placeholder: kTransparentImage,
-                )),
+            FadeInImage.memoryNetwork(
+              image: movie["cover"],
+              width: 80.0,
+              height: 100.0,
+              fit: BoxFit.fill,
+              placeholder: kTransparentImage,
+            ),
             Expanded(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -101,14 +107,14 @@ class _MovieListState extends State<MovieListPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      movie["MovieTitle"],
+                      movie["movie_title"],
                       style: Theme.of(context).textTheme.body2,
                       maxLines: 1,
                     ),
-                    Text('车牌:${movie["Licences"]}'),
-                    Text('年份:${movie["PublicDate"]}'),
+                    Text('车牌:${movie["licences"]}'),
+                    Text('年份:${movie["publish_date"]}'),
 //                    Text(movie["Vid"]),
-                    Icon(movie["Hot"] ? Icons.star : Icons.star_border,
+                    Icon(movie["hot"] == 1 ? Icons.star : Icons.star_border,
                         size: 24.0, color: Colors.red),
                   ],
                 ),
@@ -117,17 +123,11 @@ class _MovieListState extends State<MovieListPage> {
           ],
         ),
         onTap: () {
-
-          if (index % 2 == 0) {
-            flutterWebViewPlugin.launch(ToolUtils.getPalyerUrl(movie["Vid"]));
-          }else{
-            Navigator.of(context).push(new MaterialPageRoute(
-                builder: (ctx) => new MovieInfoPage(
-                    movieVid: movie["Vid"],
-                    pageUrl: "https://avmoo.xyz/cn/movie/6x4w",
-                    movieTitle: movie["MovieTitle"])));
+          if (Platform.isIOS) {
+            ToolUtils.launchURL(ToolUtils.getPalyerUrl(movie["vid"]));
+          } else {
+            FlutterWebviewPlugin().launch(ToolUtils.getPalyerUrl(movie["vid"]));
           }
-
         },
       ),
     ));

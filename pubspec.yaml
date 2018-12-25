@@ -27,6 +27,7 @@ dependencies:
   flutter_webview_plugin: ^0.3.0+2
   shared_preferences: ^0.4.3
   url_launcher: ^4.0.3
+  sqflite: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -79,3 +80,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.io/custom-fonts/#from-packages
+
+  assets:
+      - asset/movie.db
