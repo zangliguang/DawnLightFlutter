@@ -6,6 +6,7 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:liguang_flutter/ToolUtils.dart';
 import 'package:liguang_flutter/constants.dart';
 import 'package:liguang_flutter/data/database_helper.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class MovieListPage extends StatefulWidget {
@@ -23,11 +24,13 @@ class _MovieListState extends State<MovieListPage> {
   ScrollController _scrollController = new ScrollController();
   var curPage = 0;
   var tableName = 'mosaic_movie';
+  Database db;
 
   @override
   void dispose() {
     super.dispose();
     _scrollController.dispose();
+    db.close();
   }
 
   @override
@@ -45,9 +48,11 @@ class _MovieListState extends State<MovieListPage> {
   }
 
   Future _loadMovieDate(bool isRefresh) async {
-    var db = await DatabaseHelper().db;
-    List<Map<String, dynamic>> list = await db.rawQuery(
-        "SELECT * FROM $tableName limit ${Constants.DefaultPageSize} offset ${isRefresh ? 0 : curPage}");
+    db = await DatabaseHelper().db;
+    var sql =
+        "SELECT * FROM $tableName limit ${Constants.DefaultPageSize} offset ${isRefresh ? 0 : curPage}";
+    print(sql);
+    List<Map<String, dynamic>> list = await db.rawQuery(sql);
     print(list.length);
 
     setState(() {
