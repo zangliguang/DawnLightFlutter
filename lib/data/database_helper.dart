@@ -30,8 +30,10 @@ class DatabaseHelper {
 //    return ourDb;
 
     var databasesPath = await getDatabasesPath();
-    String path = join(databasesPath, "asset_movie.db");
+    Directory(databasesPath).create(recursive: true);
 
+    String path = join(databasesPath, "asset_movie.db");
+    await deleteDatabase(path);
     ByteData data = await rootBundle.load(join("asset", "movie.db"));
     List<int> bytes =
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
@@ -41,6 +43,4 @@ class DatabaseHelper {
     Database db = await openDatabase(path);
     return db;
   }
-
-
 }

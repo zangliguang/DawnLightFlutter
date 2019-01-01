@@ -50,7 +50,7 @@ class _MovieListState extends State<MovieListPage> {
   Future _loadMovieDate(bool isRefresh) async {
     db = await DatabaseHelper().db;
     var sql =
-        "SELECT * FROM $tableName limit ${Constants.DefaultPageSize} offset ${isRefresh ? 0 : curPage}";
+        "SELECT * FROM $tableName order by publish_date desc limit ${Constants.DefaultPageSize} offset ${isRefresh ? 0 : curPage}";
     print(sql);
     List<Map<String, dynamic>> list = await db.rawQuery(sql);
     print(list.length);
