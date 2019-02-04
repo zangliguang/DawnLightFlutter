@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:liguang_flutter/ToolUtils.dart';
 import 'package:liguang_flutter/entity/EntityTools.dart';
 import 'package:liguang_flutter/entity/MoviePageInfo.dart';
 import 'package:liguang_flutter/routes/MovieListFromWebPage.dart';
+import 'package:liguang_flutter/routes/MovieListPlayDirectly.dart';
 import 'package:liguang_flutter/ui/CommonUI.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -69,9 +71,17 @@ class _getActressState extends State<ActressPage>
               ],
             ),
             onTap: () {
-              Navigator.of(context).push(new MaterialPageRoute(
-                  builder: (ctx) => new MovieListFromWebPage(
-                      searchFactor.factorUrl, searchFactor.factorName)));
+              ToolUtils.getBoolSp("PlayDirectly", false).then((result) {
+               if(result){
+                 Navigator.of(context).push(new MaterialPageRoute(
+                     builder: (ctx) => new MovieListPlayDirectly(searchFactor.factorName)));
+               }else{
+                 Navigator.of(context).push(new MaterialPageRoute(
+                     builder: (ctx) => new MovieListFromWebPage(
+                         searchFactor.factorUrl, searchFactor.factorName)));
+               }
+              });
+
             },
           ),
         );

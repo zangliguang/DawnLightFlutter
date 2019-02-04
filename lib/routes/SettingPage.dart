@@ -14,12 +14,19 @@ class SettingPage extends StatefulWidget {
 
 class _SettingState extends State<SettingPage> {
   bool mosaic = true;
+  bool playDirectly = false;
 
   @override
   void initState() {
     ToolUtils.getSp("baseUrl", Constants.MosaicUrl).then((value) {
       setState(() {
         mosaic = value == Constants.MosaicUrl;
+      });
+    });
+
+    ToolUtils.getBoolSp("PlayDirectly", false).then((value) {
+      setState(() {
+        playDirectly = value;
       });
     });
   }
@@ -55,6 +62,25 @@ class _SettingState extends State<SettingPage> {
                       (val) {
                         ToolUtils.saveSp("baseUrl",
                             val ? Constants.MosaicUrl : Constants.NoMosaicUrl);
+                      },
+                    )),
+              ],
+            ),
+          ),
+          Card(
+            color: Colors.white,
+            elevation: 2.0,
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                    leading: Icon(
+                      Icons.movie_filter,
+                    ),
+                    title: Text("Play Directly"),
+                    trailing: CommonSwitch(
+                      playDirectly,
+                      (val) {
+                        ToolUtils.saveBoolSp("PlayDirectly", val);
                       },
                     )),
               ],

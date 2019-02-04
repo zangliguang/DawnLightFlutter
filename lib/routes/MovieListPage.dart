@@ -53,14 +53,14 @@ class _MovieListState extends State<MovieListPage> {
         "SELECT * FROM $tableName order by publish_date desc limit ${Constants.DefaultPageSize} offset ${isRefresh ? 0 : curPage}";
     print(sql);
     List<Map<String, dynamic>> list = await db.rawQuery(sql);
-    print(list.length);
+//    print(list.length);
 
     setState(() {
       if (isRefresh) {
         listData.clear();
       }
-      print(list);
-      print(listData);
+//      print(list);
+//      print(listData);
       listData..addAll(list);
       curPage = listData.length;
     });

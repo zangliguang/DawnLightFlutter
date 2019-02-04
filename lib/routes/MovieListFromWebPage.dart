@@ -5,6 +5,7 @@ import 'package:liguang_flutter/ToolUtils.dart';
 import 'package:liguang_flutter/entity/EntityTools.dart';
 import 'package:liguang_flutter/entity/MovieItemEntity.dart';
 import 'package:liguang_flutter/routes/MovieInfoPage.dart';
+import 'package:liguang_flutter/routes/MovieListPlayDirectly.dart';
 import 'package:liguang_flutter/ui/CommonUI.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -58,7 +59,6 @@ class _MovieListFromWebState extends State<MovieListFromWebPage>
                     setState(() {
                       showSearchView = !showSearchView;
                     });
-                    print("点击了搜索");
                   },
                 )
               ],
@@ -92,14 +92,25 @@ class _MovieListFromWebState extends State<MovieListFromWebPage>
                   borderRadius: BorderRadius.all(Radius.circular(10.0))),
             ),
             onSubmitted: (String val) {
-              ToolUtils.getSp("baseUrl", Constants.MosaicUrl).then((result) {
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (ctx) => new MovieListFromWebPage(
-                        result + "search/" + val, val)));
+              ToolUtils.getBoolSp("PlayDirectly", false).then((result) {
+                if(result){
+                  Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (ctx) => new MovieListPlayDirectly(val)));
+                }else{
+                  ToolUtils.getSp("baseUrl", Constants.MosaicUrl).then((result) {
+                    Navigator.of(context).push(new MaterialPageRoute(
+                        builder: (ctx) => new MovieListFromWebPage(
+                            result + "search/" + val, val)));
+                  });
+                }
                 setState(() {
                   showSearchView = false;
                 });
               });
+
+
+
+
             },
           ),
         ));
@@ -107,7 +118,6 @@ class _MovieListFromWebState extends State<MovieListFromWebPage>
       return Stack(
           alignment: AlignmentDirectional.topCenter, children: children2);
 
-      RefreshIndicator(child: listView, onRefresh: _pullToRefresh);
     }
   }
 

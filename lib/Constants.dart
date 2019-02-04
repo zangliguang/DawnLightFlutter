@@ -4,6 +4,7 @@ class Constants {
   static const String MosaicUrl = 'https://avmoo.xyz/cn/';
   static const String NoMosaicUrl = 'https://avsox.net/cn/';
   static const String BaseUrl = MosaicUrl;
+
   static const String SearchMovie =
       'http://api.rekonquer.com/psvs/search.php?kw=';
   static const String ReleasedPage = BaseUrl + 'released';

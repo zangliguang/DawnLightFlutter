@@ -7,7 +7,6 @@ class HttpUtil {
   Options options;
 
   static HttpUtil getInstance() {
-    print('getInstance');
     if (instance == null) {
       instance = new HttpUtil();
     }
