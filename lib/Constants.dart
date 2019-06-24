@@ -1,8 +1,8 @@
 class Constants {
   static const int DefaultPageSize = 100;
   static const String BaseRequestUrl = 'http://192.168.2.108:8000/';
-  static const String MosaicUrl = 'https://javzoo.com/cn/';
-  static const String NoMosaicUrl = 'https://avme.pw/cn/';
+  static const String MosaicUrl = 'https://avmoo.asia/cn/';
+  static const String NoMosaicUrl = 'https://avsox.asia/cn/';
   static const String BaseUrl = MosaicUrl;
 
   static const String SearchMovie =
