@@ -8,6 +8,7 @@ import 'package:liguang_flutter/ToolUtils.dart';
 import 'package:liguang_flutter/entity/MoviePlayDirectly.dart';
 import 'package:liguang_flutter/http/HttpUtil.dart';
 import 'package:liguang_flutter/routes/MovieListFromWebPage.dart';
+import 'package:liguang_flutter/routes/webview_flutter.dart';
 import 'package:liguang_flutter/ui/CommonUI.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -191,7 +192,10 @@ class _MovieListPlayDirectlyState extends State<MovieListPlayDirectly> {
           if (Platform.isIOS) {
             ToolUtils.launchURL(ToolUtils.getPalyerUrl(movie.vid));
           } else {
-            FlutterWebviewPlugin().launch(ToolUtils.getPalyerUrl(movie.vid));
+//            FlutterWebviewPlugin().launch(ToolUtils.getPalyerUrl(movie.vid));
+
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => WebViewPlayer(movie.title,ToolUtils.getPalyerUrl(movie.vid))));
           }
         },
       ),

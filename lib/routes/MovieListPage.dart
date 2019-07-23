@@ -6,6 +6,7 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:liguang_flutter/ToolUtils.dart';
 import 'package:liguang_flutter/constants.dart';
 import 'package:liguang_flutter/data/database_helper.dart';
+import 'package:liguang_flutter/routes/webview_flutter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -131,7 +132,9 @@ class _MovieListState extends State<MovieListPage> {
           if (Platform.isIOS) {
             ToolUtils.launchURL(ToolUtils.getPalyerUrl(movie["vid"]));
           } else {
-            FlutterWebviewPlugin().launch(ToolUtils.getPalyerUrl(movie["vid"]));
+//            FlutterWebviewPlugin().launch(ToolUtils.getPalyerUrl(movie["vid"]));
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => WebViewPlayer(movie["licences"],ToolUtils.getPalyerUrl(movie["vid"]))));
           }
         },
       ),
