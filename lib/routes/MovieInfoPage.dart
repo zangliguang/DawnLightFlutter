@@ -10,6 +10,7 @@ import 'package:liguang_flutter/entity/MoviePageInfo.dart';
 import 'package:liguang_flutter/http/HttpUtil.dart';
 import 'package:liguang_flutter/routes/ImageBrowserPage.dart';
 import 'package:liguang_flutter/routes/MovieListFromWebPage.dart';
+import 'package:liguang_flutter/routes/webview_flutter.dart';
 import 'package:liguang_flutter/ui/CommonUI.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -74,8 +75,10 @@ class _MovieInfoPageState extends State<MovieInfoPage> {
                                 ToolUtils.launchURL(
                                     ToolUtils.getPalyerUrl(movieVid));
                               } else {
-                                FlutterWebviewPlugin()
-                                    .launch(ToolUtils.getPalyerUrl(movieVid));
+//                                FlutterWebviewPlugin()
+//                                    .launch(ToolUtils.getPalyerUrl(movieVid));
+                                Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (context) => WebViewPlayer(movieInfo.header[0].factorName,ToolUtils.getPalyerUrl(movieVid))));
                               }
                             },
                           )))),
